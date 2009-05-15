@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# PROVIDE: couchdb
+# REQUIRE: LOGIN
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# couchdb_enable (bool):   Set to NO by default.
+#               Set it to YES to enable couchdb.
+#
+
+. %%RC_SUBR%%
+
+name="couchdb"
+rcvar=${name}_enable
+
+command="%%PREFIX%%/bin/${name}"
+pidfile=/var/run/${name}.pid
+logfile=/var/log/${name}.log
+errfile=/var/log/${name_err}.log
+
+load_rc_config $name
+
+: ${couchdb_enable="NO"}
+: ${couchdb_flags="-b -o ${logfile} -e ${errfile} -p ${pidfile}"}
+
+stop_cmd="${command} -d && rm -f ${pidfile}"
+
+run_rc_command "$1"
