@@ -13,13 +13,13 @@
 #
 # couchdb_etcdir (string):   In case you want another dir for default.ini/local.ini.
 #
-# couchdb_respawn (int):   Set to none by default. In case CouchDB crashes, respawn after X seconds.
+# couchdb_respawn (num):   Set to none by default (= disabled).
+#                  In case CouchDB crashes, respawn after X seconds.
 #
 
 couchdb_user="${couchdb_user:-"couchdb"}"
 couchdb_enablelogs="${couchdb_enablelogs:-"YES"}"
 couchdb_etcdir="${couchdb_etcdir:-"/usr/local/etc/couchdb"}"
-couchdb_respawn="${couchdb_respawn:-"0"}"
 
 . /etc/rc.subr
 
@@ -31,11 +31,12 @@ load_rc_config $name
 command="/usr/local/bin/${name}"
 pidfile=/var/run/${name}.pid
 etcdir=/usr/local/etc/${name}
-respawn=""
 
-if [ "$couchdb_respawn" gt 0 ]
+if [ "$couchdb_respawn" -gt 0 ]
     then
-        respawn = "-r ${couchdb_respawn} "
+        respawn="-r ${couchdb_respawn} "
+    else
+        respawn=""
 fi
 
 if [ "$couchdb_enablelogs" = "YES" ]
