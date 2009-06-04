@@ -1,0 +1,26 @@
+#!/bin/sh
+
+PATH=/bin:/usr/sbin
+
+USER=couchdb
+GROUP=couchdb
+UID=919
+GID=919
+
+case $2 in
+  PRE-INSTALL)
+  if pw user show "${USER}" 2>/dev/null; then
+    echo "You already have a user \"${USER}\", so I will use it."
+  else
+    if pw useradd ${USER} -u ${UID} -g ${GROUP} -h - \
+      -s /usr/sbin/nologin -L daemon -d /var/empty -c "Symon Account"
+    then
+      pw groupmod ${GROUP} -g ${GID} # double check
+      echo "Added user \"${USER}\"."
+    else
+      echo "Adding user \"${USER}\" failed..."
+      exit 1
+    fi
+  fi
+  ;;
+esac
