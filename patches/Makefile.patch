@@ -1,0 +1,49 @@
+--- Makefile.orig       2009-06-04 09:07:58.000000000 -0500
++++ Makefile    2009-06-04 09:55:59.000000000 -0500
+@@ -7,7 +7,7 @@
+
+ PORTNAME=      couchdb
+ PORTVERSION=   0.9.0
+-PORTEPOCH=     1
++PORTEPOCH=     2
+ CATEGORIES=    databases
+ MASTER_SITES=  ${MASTER_SITE_APACHE}
+ MASTER_SITE_SUBDIR=    couchdb/${PORTVERSION}
+@@ -16,6 +16,11 @@ DISTNAME=    apache-couchdb-${PORTVERSION}
+ MAINTAINER=    till@php.net
+ COMMENT=       A document database server, accessible via a RESTful JSON API
+
++COUCH_VARDIR?= /var
++COUCH_DBDIR?=  ${COUCH_VARDIR}/db/couchdb
++COUCH_LOGDIR?= ${COUCH_VARDIR}/log/couchdb
++COUCH_USER?=   couchdb
++
+ LIB_DEPENDS=   icudata:${PORTSDIR}/devel/icu \
+                js:${PORTSDIR}/lang/spidermonkey \
+                curl.5:${PORTSDIR}/ftp/curl
+@@ -31,9 +36,25 @@ CONFIGURE_ARGS=      --with-erlang=${LOCALBAS
+
+ MAN1=  couchdb.1 couchjs.1
+
++pre-fetch:
++       @${ECHO} ""
++       @${ECHO} "If you are upgrading CouchDB, please double-check that the datafile is compatible."
++       @${ECHO} ""
++
+ post-patch:
+ .if defined(NOPORTDOCS)
+        @${REINPLACE_CMD} -e 's/install-data-am$$//' ${WRKSRC}/Makefile.in
+ .endif
+
++pre-install:
++       @${SH} ${PKGINSTALL} ${PORTNAME} PRE-INSTALL
++
++do-install:
++       ${MKDIR} ${COUCH_DBDIR}
++       ${CHOWN} ${COUCH_USER} ${COUCH_DBDIR}
++       ${CHOWN} ${COUCH_USER} ${COUCH_LOGDIR}
++
++post-install:
++       @${CAT} ${PKGMESSAGE}
++
+ .include <bsd.port.mk>
