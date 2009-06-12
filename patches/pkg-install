@@ -12,8 +12,13 @@ case $2 in
   if pw user show "${USER}" 2>/dev/null; then
     echo "You already have a user \"${USER}\", so I will use it."
   else
+    if pw group "${GROUP}" 2>/dev/null; then
+      echo "You already have a group \"${GROUP}\", so I will use it."
+    else
+      pw groupadd ${GROUP} -g ${GID}
+    fi
     if pw useradd ${USER} -u ${UID} -g ${GROUP} -h - \
-      -s /usr/sbin/nologin -L daemon -d /var/empty -c "Symon Account"
+      -s /usr/sbin/nologin -L daemon -d /var/empty -c "CouchDB - time to relax"
     then
       pw groupmod ${GROUP} -g ${GID} # double check
       echo "Added user \"${USER}\"."
